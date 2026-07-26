@@ -39,12 +39,7 @@ const supabase = createClient(
 // ─── MIDDLEWARE ──────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(compression());
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? ['https://your-vercel-app.vercel.app'] 
-        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    credentials: true
-}));
+app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/uploads', express.static(path.resolve(UPLOAD_DIR)));
