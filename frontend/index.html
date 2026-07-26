@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0e17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Enterprise Warehouse Management System">
+<link rel="manifest" href="manifest.json">
+<title>Enterprise WMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ═══════════════════════════════════════════
+   CSS VARIABLES & RESET
+   ═══════════════════════════════════════════ */
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #0f1520;
+  --bg-card: rgba(16, 24, 40, 0.75);
+  --bg-card-solid: #101828;
+  --bg-input: rgba(15, 21, 32, 0.9);
+  --bg-sidebar: rgba(8, 12, 22, 0.95);
+  --bg-header: rgba(10, 14, 23, 0.9);
+  --bg-hover: rgba(0, 229, 255, 0.06);
+  --bg-active: rgba(0, 229, 255, 0.1);
+  --text-primary: #e0e6ed;
+  --text-secondary: #8899aa;
+  --text-muted: #556677;
+  --accent: #00e5ff;
+  --accent-dim: rgba(0, 229, 255, 0.15);
+  --accent-glow: rgba(0, 229, 255, 0.3);
+  --success: #00ff88;
+  --success-dim: rgba(0, 255, 136, 0.15);
+  --warning: #ffab00;
+  --warning-dim: rgba(255, 171, 0, 0.15);
+  --danger: #ff1744;
+  --danger-dim: rgba(255, 23, 68, 0.15);
+  --info: #448aff;
+  --info-dim: rgba(68, 138, 255, 0.15);
+  --border: rgba(0, 229, 255, 0.1);
+  --border-strong: rgba(0, 229, 255, 0.25);
+  --glass: rgba(16, 24, 40, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --sidebar-w: 260px;
+  --sidebar-collapsed: 64px;
+  --header-h: 56px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-theme="light"] {
+  --bg-primary: #f0f2f5;
+  --bg-secondary: #e4e7ec;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-solid: #ffffff;
+  --bg-input: rgba(255, 255, 255, 0.95);
+  --bg-sidebar: rgba(255, 255, 255, 0.95);
+  --bg-header: rgba(255, 255, 255, 0.92);
+  --bg-hover: rgba(0, 229, 255, 0.06);
+  --bg-active: rgba(0, 229, 255, 0.1);
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #a0aec0;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 48px rgba(0, 0, 0, 0.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+input, select, textarea, button { font-family: inherit; font-size: inherit; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   ANIMATED BACKGROUND
+   ═══════════════════════════════════════════ */
+#cyber-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.cyber-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 20s linear infinite;
+}
+@keyframes gridMove {
+  0% { transform: translate(0,0); }
+  100% { transform: translate(60px,60px); }
+}
+.cyber-glow {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15;
+  animation: glowPulse 8s ease-in-out infinite alternate;
+}
+.cyber-glow:nth-child(2) { width: 400px; height: 400px; background: var(--accent); top: 10%; left: 10%; }
+.cyber-glow:nth-child(3) { width: 300px; height: 300px; background: #00ff88; bottom: 20%; right: 15%; animation-delay: -3s; }
+.cyber-glow:nth-child(4) { width: 250px; height: 250px; background: #ff6b35; top: 50%; left: 60%; animation-delay: -5s; }
+@keyframes glowPulse {
+  0% { transform: scale(1); opacity: 0.1; }
+  100% { transform: scale(1.3); opacity: 0.2; }
+}
+#particles-canvas { position: absolute; inset: 0; }
+
+/* ═══════════════════════════════════════════
+   LOGIN SCREEN
+   ═══════════════════════════════════════════ */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-primary);
+  transition: opacity 0.6s, transform 0.6s;
+}
+#login-screen.hidden { opacity: 0; transform: scale(1.05); pointer-events: none; }
+.login-container {
+  display: flex; width: 900px; max-width: 95vw; min-height: 520px;
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border);
+  position: relative; z-index: 2;
+}
+.login-visual {
+  flex: 1; background: linear-gradient(135deg, #0a1628, #0d2137, #0a1628);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; padding: 40px;
+}
+.login-visual::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 15s linear infinite;
+}
+.warehouse-scene {
+  position: relative; z-index: 1; width: 100%; max-width: 300px; height: 200px;
+}
+/* Forklift Animation */
+.forklift {
+  position: absolute; bottom: 30px; left: 0;
+  width: 80px; height: 50px;
+  animation: forkliftMove 8s ease-in-out infinite;
+}
+.forklift-body {
+  width: 50px; height: 30px; background: var(--warning); border-radius: 4px 8px 2px 2px;
+  position: relative; margin-left: 15px;
+}
+.forklift-body::before {
+  content: ''; position: absolute; top: -14px; left: 5px;
+  width: 30px; height: 14px; background: rgba(255,171,0,0.7); border-radius: 6px 6px 0 0;
+}
+.forklift-body::after {
+  content: ''; position: absolute; bottom: -10px; left: -15px;
+  width: 8px; height: 10px; background: #888; border-radius: 0 0 2px 2px;
+  box-shadow: 20px 0 0 #888, 40px 0 0 #888;
+}
+.forklift-fork {
+  position: absolute; bottom: -22px; left: -12px;
+  width: 6px; height: 16px; background: #aaa;
+  box-shadow: 10px 0 0 #aaa;
+}
+.forklift-light {
+  position: absolute; bottom: 10px; right: -2px;
+  width: 6px; height: 6px; background: var(--warning); border-radius: 50%;
+  box-shadow: 0 0 10px var(--warning), 0 0 20px var(--warning);
+  animation: blink 1s infinite;
+}
+@keyframes forkliftMove {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(80px); }
+  50% { transform: translateX(80px); }
+  80% { transform: translateX(0); }
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+/* Boxes */
+.box {
+  position: absolute; border: 2px solid var(--accent);
+  background: var(--accent-dim); border-radius: 3px;
+}
+.box::after {
+  content: ''; position: absolute; inset: 3px;
+  border: 1px solid rgba(0,229,255,0.3);
+}
+.box-1 { width: 30px; height: 25px; bottom: 55px; left: 100px; animation: boxFloat 3s ease-in-out infinite; }
+.box-2 { width: 35px; height: 28px; bottom: 55px; left: 140px; animation: boxFloat 3s ease-in-out 0.5s infinite; }
+.box-3 { width: 28px; height: 22px; bottom: 85px; left: 115px; animation: boxFloat 3s ease-in-out 1s infinite; }
+@keyframes boxFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+/* Rack in background */
+.rack-bg {
+  position: absolute; top: 10px; right: 10px; width: 120px; height: 140px;
+  border: 2px solid rgba(0,229,255,0.2); border-radius: 4px;
+}
+.rack-shelf {
+  position: absolute; left: 5px; right: 5px; height: 2px; background: rgba(0,229,255,0.2);
+}
+.rack-shelf:nth-child(1) { top: 30px; }
+.rack-shelf:nth-child(2) { top: 65px; }
+.rack-shelf:nth-child(3) { top: 100px; }
+.rack-mini-box {
+  position: absolute; width: 15px; height: 12px;
+  background: rgba(0,229,255,0.15); border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 2px;
+}
+.rack-mini-box:nth-child(4) { top: 14px; left: 10px; }
+.rack-mini-box:nth-child(5) { top: 14px; left: 30px; }
+.rack-mini-box:nth-child(6) { top: 14px; left: 50px; }
+.rack-mini-box:nth-child(7) { top: 49px; left: 10px; }
+.rack-mini-box:nth-child(8) { top: 49px; left: 30px; }
+.rack-mini-box:nth-child(9) { top: 84px; left: 50px; }
+/* Scan line */
+.scan-line {
+  position: absolute; left: 95px; bottom: 40px; width: 80px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--danger), transparent);
+  animation: scanLine 2s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--danger);
+}
+@keyframes scanLine {
+  0% { bottom: 40px; opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { bottom: 120px; opacity: 0; }
+}
+.login-visual h2 {
+  position: relative; z-index: 1; color: var(--accent);
+  font-family: var(--font-display); font-size: 1.6rem; font-weight: 700;
+  margin-top: 30px; letter-spacing: 1px;
+}
+.login-visual p {
+  position: relative; z-index: 1; color: var(--text-secondary);
+  margin-top: 8px; font-size: 0.85rem; text-align: center;
+}
+/* Login Form */
+.login-form-side {
+  flex: 1; background: var(--bg-card-solid);
+  padding: 48px 40px; display: flex; flex-direction: column; justify-content: center;
+}
+.login-logo {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+}
+.login-logo-icon {
+  width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent), #00ff88);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; color: #0a0e17; font-weight: 700;
+}
+.login-logo-text {
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
+  color: var(--text-primary);
+}
+.login-logo-text span { color: var(--accent); }
+.form-group { margin-bottom: 20px; position: relative; }
+.form-group label {
+  display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.form-group .input-icon {
+  position: absolute; left: 12px; bottom: 12px; color: var(--text-muted); font-size: 0.95rem;
+}
+.form-input {
+  width: 100%; padding: 10px 12px 10px 38px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  transition: var(--transition); outline: none;
+}
+.form-input:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.form-input::placeholder { color: var(--text-muted); }
+.form-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.form-check {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.form-check input[type="checkbox"] {
+  width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer;
+}
+.form-link { font-size: 0.85rem; color: var(--accent); cursor: pointer; }
+.form-link:hover { text-decoration: underline; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 20px; border: none; border-radius: var(--radius-sm);
+  font-weight: 600; cursor: pointer; transition: var(--transition);
+  position: relative; overflow: hidden; font-size: 0.9rem;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.15), transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.btn:hover::after { opacity: 1; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #00b8d4);
+  color: #0a0e17; width: 100%; padding: 12px;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+.btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); background: var(--bg-active); }
+.btn-success { background: linear-gradient(135deg, var(--success), #00cc6a); color: #0a0e17; }
+.btn-danger { background: linear-gradient(135deg, var(--danger), #d50000); color: #fff; }
+.btn-warning { background: linear-gradient(135deg, var(--warning), #ff8f00); color: #0a0e17; }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+.btn-lg { padding: 14px 28px; font-size: 1rem; }
+.btn-icon {
+  width: 36px; height: 36px; padding: 0; border-radius: var(--radius-sm);
+  background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border);
+}
+.btn-icon:hover { color: var(--accent); border-color: var(--accent); }
+.login-error {
+  background: var(--danger-dim); color: var(--danger); padding: 10px 14px;
+  border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 16px;
+  display: none; border: 1px solid rgba(255,23,68,0.2);
+}
+.login-error.show { display: flex; align-items: center; gap: 8px; }
+.login-loader {
+  display: none; align-items: center; justify-content: center; gap: 10px;
+  color: var(--accent); font-size: 0.9rem;
+}
+.login-loader.show { display: flex; }
+.spinner {
+  width: 20px; height: 20px; border: 2px solid var(--accent-dim);
+  border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════
+   MAIN APP LAYOUT
+   ═══════════════════════════════════════════ */
+#app { display: none; min-height: 100vh; position: relative; z-index: 1; }
+#app.active { display: flex; }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); height: 100vh; position: fixed; top: 0; left: 0;
+  background: var(--bg-sidebar); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 100;
+  transition: width var(--transition); backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+.sidebar.collapsed { width: var(--sidebar-collapsed); }
+.sidebar-header {
+  padding: 16px; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border); min-height: var(--header-h);
+}
+.sidebar-logo {
+  width: 34px; height: 34px; min-width: 34px;
+  background: linear-gradient(135deg, var(--accent), #00ff88);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #0a0e17; font-size: 0.9rem;
+}
+.sidebar-brand {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;
+  white-space: nowrap; overflow: hidden;
+}
+.sidebar-brand span { color: var(--accent); }
+.sidebar-nav {
+  flex: 1; overflow-y: auto; padding: 8px;
+}
+.nav-section {
+  margin-bottom: 4px;
+}
+.nav-section-title {
+  padding: 8px 12px 4px; font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden;
+}
+.sidebar.collapsed .nav-section-title { display: none; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); cursor: pointer;
+  transition: var(--transition); white-space: nowrap; position: relative;
+  margin-bottom: 1px;
+}
+.nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.nav-item.active {
+  background: var(--bg-active); color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.nav-item i { width: 20px; text-align: center; font-size: 0.95rem; flex-shrink: 0; }
+.nav-item span { overflow: hidden; }
+.sidebar.collapsed .nav-item span { display: none; }
+.nav-badge {
+  margin-left: auto; background: var(--danger); color: #fff;
+  font-size: 0.65rem; font-weight: 700; padding: 2px 6px;
+  border-radius: 10px; min-width: 18px; text-align: center;
+}
+.sidebar.collapsed .nav-badge { display: none; }
+.sidebar-footer {
+  padding: 12px; border-top: 1px solid var(--border);
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px; padding: 8px;
+  border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition);
+}
+.sidebar-user:hover { background: var(--bg-hover); }
+.sidebar-avatar {
+  width: 34px; height: 34px; min-width: 34px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), #00ff88);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #0a0e17; font-size: 0.85rem;
+}
+.sidebar-user-info { overflow: hidden; }
+.sidebar-user-name { font-weight: 600; font-size: 0.85rem; white-space: nowrap; }
+.sidebar-user-role { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; }
+.sidebar.collapsed .sidebar-user-info { display: none; }
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1; margin-left: var(--sidebar-w);
+  transition: margin-left var(--transition); min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+.sidebar.collapsed ~ .main-content { margin-left: var(--sidebar-collapsed); }
+
+/* HEADER */
+.header {
+  height: var(--header-h); background: var(--bg-header);
+  border-bottom: 1px solid var(--border); display: flex;
+  align-items: center; padding: 0 20px; gap: 12px;
+  position: sticky; top: 0; z-index: 90; backdrop-filter: blur(20px);
+}
+.header-toggle {
+  width: 36px; height: 36px; border: none; background: none;
+  color: var(--text-secondary); cursor: pointer; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); font-size: 1.1rem;
+}
+.header-toggle:hover { background: var(--bg-hover); color: var(--accent); }
+.header-search {
+  flex: 1; max-width: 400px; position: relative;
+}
+.header-search input {
+  width: 100%; padding: 8px 12px 8px 36px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 20px; color: var(--text-primary); outline: none;
+  transition: var(--transition);
+}
+.header-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.header-search i {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.85rem;
+}
+.header-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.header-notif-btn {
+  position: relative; width: 36px; height: 36px; border: none;
+  background: none; color: var(--text-secondary); cursor: pointer;
+  border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); font-size: 1rem;
+}
+.header-notif-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.notif-badge {
+  position: absolute; top: 2px; right: 2px; width: 16px; height: 16px;
+  background: var(--danger); color: #fff; font-size: 0.6rem; font-weight: 700;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  display: none;
+}
+.notif-badge.show { display: flex; }
+.header-theme-btn {
+  width: 36px; height: 36px; border: none; background: none;
+  color: var(--text-secondary); cursor: pointer; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); font-size: 1rem;
+}
+.header-theme-btn:hover { background: var(--bg-hover); color: var(--warning); }
+
+/* PAGE CONTAINER */
+.page-container {
+  flex: 1; padding: 20px; overflow-y: auto;
+}
+.page { display: none; animation: pageIn 0.35s ease-out; }
+.page.active { display: block; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+}
+.page-title {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+}
+.page-title i { color: var(--accent); margin-right: 8px; }
+.page-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+.page-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ═══════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════ */
+.card {
+  background: var(--bg-card); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); backdrop-filter: blur(12px);
+  box-shadow: var(--shadow); transition: var(--transition);
+  overflow: hidden;
+}
+.card:hover { border-color: var(--border); }
+.card-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; font-size: 0.9rem;
+}
+.card-body { padding: 18px; }
+.card-footer { padding: 12px 18px; border-top: 1px solid var(--border); }
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 18px; backdrop-filter: blur(12px);
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--kpi-color, var(--accent)); opacity: 0.8;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border); }
+.kpi-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 12px;
+}
+.kpi-value {
+  font-family: var(--font-display); font-size: 1.8rem; font-weight: 700;
+  line-height: 1;
+}
+.kpi-label { font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px; }
+.kpi-trend {
+  font-size: 0.72rem; margin-top: 8px; display: flex; align-items: center; gap: 4px;
+}
+.kpi-trend.up { color: var(--success); }
+.kpi-trend.down { color: var(--danger); }
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-hover) 25%, var(--bg-active) 50%, var(--bg-hover) 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-sm);
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-text { height: 14px; margin-bottom: 8px; }
+.skeleton-title { height: 24px; width: 60%; margin-bottom: 12px; }
+.skeleton-card { height: 100px; }
+
+/* ═══════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════ */
+.table-wrapper {
+  overflow-x: auto; border-radius: var(--radius);
+  border: 1px solid var(--glass-border);
+}
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
+}
+.data-table thead { background: var(--bg-secondary); }
+.data-table th {
+  padding: 10px 14px; text-align: left; font-weight: 600;
+  color: var(--text-secondary); font-size: 0.78rem;
+  text-transform: uppercase; letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+  cursor: pointer; user-select: none;
+}
+.data-table th:hover { color: var(--accent); }
+.data-table th i { margin-left: 4px; font-size: 0.7rem; }
+.data-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  white-space: nowrap; max-width: 250px; overflow: hidden; text-overflow: ellipsis;
+}
+.data-table tbody tr { transition: var(--transition); }
+.data-table tbody tr:hover { background: var(--bg-hover); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+/* Status badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 600;
+}
+.badge-success { background: var(--success-dim); color: var(--success); }
+.badge-warning { background: var(--warning-dim); color: var(--warning); }
+.badge-danger { background: var(--danger-dim); color: var(--danger); }
+.badge-info { background: var(--info-dim); color: var(--info); }
+.badge-accent { background: var(--accent-dim); color: var(--accent); }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* Pagination */
+.pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; flex-wrap: wrap; gap: 8px;
+}
+.pagination-info { font-size: 0.8rem; color: var(--text-secondary); }
+.pagination-btns { display: flex; gap: 4px; }
+.page-btn {
+  width: 32px; height: 32px; border: 1px solid var(--border);
+  background: none; color: var(--text-secondary); border-radius: var(--radius-sm);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); font-size: 0.8rem;
+}
+.page-btn:hover { border-color: var(--accent); color: var(--accent); }
+.page-btn.active { background: var(--accent); color: #0a0e17; border-color: var(--accent); font-weight: 700; }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════
+   FORMS (Module pages)
+   ═══════════════════════════════════════════ */
+.form-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.form-grid .form-group { margin-bottom: 0; }
+.form-grid .form-input { padding-left: 12px; }
+.form-full { grid-column: 1 / -1; }
+.form-actions {
+  grid-column: 1 / -1; display: flex; gap: 10px;
+  padding-top: 8px; border-top: 1px solid var(--border); margin-top: 4px;
+}
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238899aa' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px; cursor: pointer;
+}
+textarea.form-input { resize: vertical; min-height: 70px; padding: 10px 12px; }
+.form-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+.form-error { font-size: 0.75rem; color: var(--danger); margin-top: 4px; display: none; }
+.form-error.show { display: block; }
+.form-label-with-action {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.form-label-with-action .form-link { font-size: 0.75rem; }
+
+/* Filter bar */
+.filter-bar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding: 14px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+}
+.filter-bar input, .filter-bar select {
+  padding: 7px 12px; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary); outline: none;
+  font-size: 0.85rem; transition: var(--transition);
+}
+.filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent); }
+.filter-bar input { min-width: 200px; }
+.filter-bar select { min-width: 140px; }
+
+/* ═══════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px); z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; animation: fadeIn 0.2s;
+}
+.modal-overlay.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--bg-card-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); width: 100%; max-width: 600px;
+  max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg);
+  animation: modalIn 0.3s ease-out;
+}
+.modal.modal-lg { max-width: 800px; }
+.modal.modal-xl { max-width: 1000px; }
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-header {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+.modal-close {
+  width: 32px; height: 32px; border: none; background: none;
+  color: var(--text-muted); cursor: pointer; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); font-size: 1.1rem;
+}
+.modal-close:hover { background: var(--danger-dim); color: var(--danger); }
+.modal-body { padding: 22px; }
+.modal-footer {
+  padding: 14px 22px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+/* ═══════════════════════════════════════════
+   TOAST NOTIFICATIONS
+   ═══════════════════════════════════════════ */
+#toast-container {
+  position: fixed; top: 70px; right: 20px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+.toast {
+  background: var(--bg-card-solid); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 18px; min-width: 300px; max-width: 420px;
+  box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 12px;
+  animation: toastIn 0.3s ease-out; pointer-events: auto;
+  border-left: 3px solid var(--accent);
+}
+.toast.toast-success { border-left-color: var(--success); }
+.toast.toast-danger { border-left-color: var(--danger); }
+.toast.toast-warning { border-left-color: var(--warning); }
+.toast.toast-info { border-left-color: var(--info); }
+.toast.removing { animation: toastOut 0.3s ease-in forwards; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { to { opacity: 0; transform: translateX(40px); } }
+.toast-icon { font-size: 1.1rem; margin-top: 1px; }
+.toast-success .toast-icon { color: var(--success); }
+.toast-danger .toast-icon { color: var(--danger); }
+.toast-warning .toast-icon { color: var(--warning); }
+.toast-info .toast-icon { color: var(--info); }
+.toast-content { flex: 1; }
+.toast-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 2px; }
+.toast-message { font-size: 0.8rem; color: var(--text-secondary); }
+.toast-close {
+  background: none; border: none; color: var(--text-muted); cursor: pointer;
+  padding: 2px; font-size: 0.85rem;
+}
+.toast-close:hover { color: var(--text-primary); }
+
+/* ═══════════════════════════════════════════
+   DASHBOARD WIDGETS
+   ═══════════════════════════════════════════ */
+.dashboard-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
+}
+.dashboard-grid .card { height: 100%; }
+.widget-list { list-style: none; }
+.widget-list li {
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.85rem;
+}
+.widget-list li:last-child { border-bottom: none; }
+.widget-list-item { display: flex; align-items: center; gap: 10px; }
+.widget-list-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+}
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 2px; background: var(--border);
+}
+.timeline-item { position: relative; padding-bottom: 16px; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -20px; top: 4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--accent); background: var(--bg-primary);
+}
+.timeline-item.active::before { background: var(--accent); }
+.timeline-time { font-size: 0.72rem; color: var(--text-muted); }
+.timeline-text { font-size: 0.85rem; margin-top: 2px; }
+/* Heat map */
+.heatmap-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+}
+.heatmap-cell {
+  aspect-ratio: 1; border-radius: 4px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 600; transition: var(--transition);
+  cursor: pointer;
+}
+.heatmap-cell:hover { transform: scale(1.1); z-index: 1; }
+/* Warehouse map */
+.warehouse-map {
+  display: grid; gap: 4px; padding: 10px;
+}
+.warehouse-zone { margin-bottom: 8px; }
+.warehouse-zone-title {
+  font-size: 0.75rem; font-weight: 700; color: var(--accent);
+  margin-bottom: 4px; padding-left: 4px;
+}
+.warehouse-racks {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 4px;
+}
+.warehouse-rack {
+  padding: 8px 4px; border-radius: 4px; text-align: center;
+  font-size: 0.65rem; font-weight: 600; cursor: pointer;
+  transition: var(--transition); border: 1px solid transparent;
+}
+.warehouse-rack.empty { background: var(--success-dim); color: var(--success); border-color: rgba(0,255,136,0.2); }
+.warehouse-rack.occupied { background: var(--warning-dim); color: var(--warning); border-color: rgba(255,171,0,0.2); }
+.warehouse-rack:hover { transform: scale(1.05); border-color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   AI CHAT
+   ═══════════════════════════════════════════ */
+.ai-chat-container {
+  display: flex; flex-direction: column; height: calc(100vh - 180px);
+}
+.ai-chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px 0;
+}
+.ai-msg {
+  display: flex; gap: 10px; margin-bottom: 16px; max-width: 85%;
+  animation: msgIn 0.3s ease-out;
+}
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.ai-msg.user { margin-left: auto; flex-direction: row-reverse; }
+.ai-msg-avatar {
+  width: 32px; height: 32px; min-width: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+}
+.ai-msg.bot .ai-msg-avatar { background: var(--accent-dim); color: var(--accent); }
+.ai-msg.user .ai-msg-avatar { background: var(--success-dim); color: var(--success); }
+.ai-msg-bubble {
+  padding: 10px 14px; border-radius: var(--radius);
+  font-size: 0.85rem; line-height: 1.5;
+}
+.ai-msg.bot .ai-msg-bubble { background: var(--bg-card); border: 1px solid var(--glass-border); }
+.ai-msg.user .ai-msg-bubble { background: var(--accent-dim); color: var(--text-primary); }
+.ai-chat-input {
+  display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border);
+}
+.ai-chat-input input {
+  flex: 1; padding: 10px 14px; background: var(--bg-input);
+  border: 1px solid var(--border); border-radius: 20px;
+  color: var(--text-primary); outline: none;
+}
+.ai-chat-input input:focus { border-color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   SCANNER OVERLAY
+   ═══════════════════════════════════════════ */
+.scanner-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+.scanner-overlay.active { display: flex; }
+.scanner-video-wrap {
+  position: relative; width: 90vw; max-width: 500px; aspect-ratio: 4/3;
+  border: 2px solid var(--accent); border-radius: var(--radius);
+  overflow: hidden;
+}
+.scanner-video-wrap video { width: 100%; height: 100%; object-fit: cover; }
+.scanner-crosshair {
+  position: absolute; inset: 20%; border: 2px solid var(--accent);
+  border-radius: 8px;
+}
+.scanner-crosshair::before, .scanner-crosshair::after {
+  content: ''; position: absolute; background: var(--danger);
+}
+.scanner-crosshair::before {
+  left: 0; right: 0; top: 50%; height: 2px;
+  animation: scanH 2s ease-in-out infinite;
+}
+.scanner-crosshair::after {
+  top: 0; bottom: 0; left: 50%; width: 2px;
+  animation: scanV 2s ease-in-out infinite;
+}
+@keyframes scanH { 0%, 100% { top: 10%; } 50% { top: 90%; } }
+@keyframes scanV { 0%, 100% { left: 10%; } 50% { left: 90%; } }
+.scanner-close {
+  margin-top: 16px; padding: 10px 30px;
+  background: var(--danger); color: #fff; border: none;
+  border-radius: var(--radius-sm); cursor: pointer; font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════
+   QUICK LINKS GRID
+   ═══════════════════════════════════════════ */
+.quick-links {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
+}
+.quick-link {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px 10px; background: var(--bg-card); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); cursor: pointer; transition: var(--transition);
+  text-align: center;
+}
+.quick-link:hover { border-color: var(--accent); transform: translateY(-2px); background: var(--bg-active); }
+.quick-link i { font-size: 1.4rem; color: var(--accent); }
+.quick-link span { font-size: 0.78rem; font-weight: 500; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%); width: var(--sidebar-w) !important;
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .main-content { margin-left: 0 !important; }
+  .login-container { flex-direction: column; }
+  .login-visual { display: none; }
+  .login-form-side { padding: 32px 24px; }
+  .page-container { padding: 14px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-value { font-size: 1.4rem; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-bar input, .filter-bar select { min-width: 100%; }
+  .modal { margin: 10px; max-height: 95vh; }
+  .header-search { max-width: 200px; }
+  .page-header { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi-card { padding: 14px; }
+  .kpi-value { font-size: 1.2rem; }
+  .kpi-label { font-size: 0.7rem; }
+  .header-search { display: none; }
+  .page-title { font-size: 1.2rem; }
+  .data-table { font-size: 0.78rem; }
+  .data-table th, .data-table td { padding: 8px 10px; }
+}
+
+/* ═══════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════ */
+.tabs {
+  display: flex; gap: 2px; border-bottom: 2px solid var(--border); margin-bottom: 16px;
+  overflow-x: auto;
+}
+.tab-btn {
+  padding: 10px 18px; border: none; background: none;
+  color: var(--text-secondary); cursor: pointer; font-weight: 500;
+  font-size: 0.85rem; white-space: nowrap; transition: var(--transition);
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+}
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: pageIn 0.25s; }
+
+/* ═══════════════════════════════════════════
+   CHART PLACEHOLDERS (Canvas drawn in JS)
+   ═══════════════════════════════════════════ */
+.chart-container { position: relative; width: 100%; }
+.chart-container canvas { width: 100% !important; height: 220px !important; }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--text-muted);
+}
+.empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; opacity: 0.4; }
+.empty-state p { font-size: 0.9rem; }
+
+/* Notif dropdown */
+.notif-dropdown {
+  position: absolute; top: 100%; right: 0; width: 360px;
+  background: var(--bg-card-solid); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  display: none; z-index: 200; max-height: 400px; overflow-y: auto;
+}
+.notif-dropdown.open { display: block; animation: fadeIn 0.2s; }
+.notif-dropdown-header {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; font-size: 0.85rem;
+}
+.notif-item {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: var(--transition);
+}
+.notif-item:hover { background: var(--bg-hover); }
+.notif-item.unread { border-left: 3px solid var(--accent); }
+.notif-item-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 2px; }
+.notif-item-text { font-size: 0.75rem; color: var(--text-secondary); }
+.notif-item-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 4px; }
+
+/* File upload area */
+.file-upload-area {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 30px; text-align: center; cursor: pointer; transition: var(--transition);
+}
+.file-upload-area:hover { border-color: var(--accent); background: var(--accent-dim); }
+.file-upload-area i { font-size: 2rem; color: var(--text-muted); margin-bottom: 8px; }
+.file-upload-area p { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* Difference popup highlight */
+.diff-highlight { background: var(--danger-dim) !important; }
+
+/* Print styles */
+@media print {
+  .sidebar, .header, #cyber-bg, .filter-bar, .page-actions, .pagination { display: none !important; }
+  .main-content { margin-left: 0 !important; }
+  .page-container { padding: 0; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     ANIMATED BACKGROUND
+     ═══════════════════════════════════════════ -->
+<div id="cyber-bg">
+  <div class="cyber-grid"></div>
+  <div class="cyber-glow"></div>
+  <div class="cyber-glow"></div>
+  <div class="cyber-glow"></div>
+  <canvas id="particles-canvas"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     LOGIN SCREEN
+     ═══════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-container">
+    <div class="login-visual">
+      <div class="warehouse-scene">
+        <div class="rack-bg">
+          <div class="rack-shelf"></div><div class="rack-shelf"></div><div class="rack-shelf"></div>
+          <div class="rack-mini-box"></div><div class="rack-mini-box"></div><div class="rack-mini-box"></div>
+          <div class="rack-mini-box"></div><div class="rack-mini-box"></div><div class="rack-mini-box"></div>
+        </div>
+        <div class="forklift">
+          <div class="forklift-body"><div class="forklift-light"></div></div>
+          <div class="forklift-fork"></div>
+        </div>
+        <div class="box box-1"></div>
+        <div class="box box-2"></div>
+        <div class="box box-3"></div>
+        <div class="scan-line"></div>
+      </div>
+      <h2>Enterprise WMS</h2>
+      <p>Intelligent Warehouse Management</p>
+    </div>
+    <div class="login-form-side">
+      <div class="login-logo">
+        <div class="login-logo-icon">W</div>
+        <div class="login-logo-text">Enterprise <span>WMS</span></div>
+      </div>
+      <div class="login-error" id="login-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="login-error-text">Invalid credentials</span>
+      </div>
+      <div id="login-form-wrap">
+        <div class="form-group">
+          <label>Username</label>
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" class="form-input" id="login-username" placeholder="Enter username" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" class="form-input" id="login-password" placeholder="Enter password" autocomplete="current-password">
+        </div>
+        <div class="form-row">
+          <label class="form-check">
+            <input type="checkbox" id="login-remember"> Remember me
+          </label>
+          <span class="form-link" onclick="WMS.showToast('info','Forgot Password','Contact your administrator to reset your password.')">Forgot Password?</span>
+        </div>
+        <button class="btn btn-primary btn-lg" id="login-btn" onclick="WMS.login()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </div>
+      <div class="login-loader" id="login-loader">
+        <div class="spinner"></div> Authenticating...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APPLICATION
+     ═══════════════════════════════════════════ -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">W</div>
+      <div class="sidebar-brand">Enterprise <span>WMS</span></div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <div class="nav-item active" data-page="dashboard" onclick="WMS.navigate('dashboard')">
+          <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Inbound</div>
+        <div class="nav-item" data-page="vehicle-entry" onclick="WMS.navigate('vehicle-entry')">
+          <i class="fas fa-truck"></i><span>Vehicle Entry</span>
+        </div>
+        <div class="nav-item" data-page="vehicle-list" onclick="WMS.navigate('vehicle-list')">
+          <i class="fas fa-list"></i><span>Vehicle List</span>
+        </div>
+        <div class="nav-item" data-page="unload" onclick="WMS.navigate('unload')">
+          <i class="fas fa-boxes-stacked"></i><span>Unload Process</span>
+        </div>
+        <div class="nav-item" data-page="differences" onclick="WMS.navigate('differences')">
+          <i class="fas fa-triangle-exclamation"></i><span>Differences</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Warehouse</div>
+        <div class="nav-item" data-page="putaway" onclick="WMS.navigate('putaway')">
+          <i class="fas fa-warehouse"></i><span>Putaway</span>
+        </div>
+        <div class="nav-item" data-page="piv" onclick="WMS.navigate('piv')">
+          <i class="fas fa-barcode"></i><span>PIV</span>
+        </div>
+        <div class="nav-item" data-page="location" onclick="WMS.navigate('location')">
+          <i class="fas fa-map-marker-alt"></i><span>Location Master</span>
+        </div>
+        <div class="nav-item" data-page="warehouse-map" onclick="WMS.navigate('warehouse-map')">
+          <i class="fas fa-map"></i><span>Warehouse Map</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Outbound</div>
+        <div class="nav-item" data-page="picking" onclick="WMS.navigate('picking')">
+          <i class="fas fa-hand-holding-box fa-hand-holding"></i><span>Picking Report</span>
+        </div>
+        <div class="nav-item" data-page="pick-history" onclick="WMS.navigate('pick-history')">
+          <i class="fas fa-history"></i><span>Pick History</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Masters</div>
+        <div class="nav-item" data-page="rack-master" onclick="WMS.navigate('rack-master')">
+          <i class="fas fa-th-large"></i><span>Rack Master</span>
+        </div>
+        <div class="nav-item" data-page="material-master" onclick="WMS.navigate('material-master')">
+          <i class="fas fa-cubes"></i><span>Material Master</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <div class="nav-item" data-page="users" onclick="WMS.navigate('users')">
+          <i class="fas fa-users-cog"></i><span>User Management</span>
+        </div>
+        <div class="nav-item" data-page="audit" onclick="WMS.navigate('audit')">
+          <i class="fas fa-clipboard-list"></i><span>Audit Log</span>
+        </div>
+        <div class="nav-item" data-page="settings" onclick="WMS.navigate('settings')">
+          <i class="fas fa-cog"></i><span>Settings</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Intelligence</div>
+        <div class="nav-item" data-page="ai-assistant" onclick="WMS.navigate('ai-assistant')">
+          <i class="fas fa-robot"></i><span>AI Assistant</span>
+        </div>
+        <div class="nav-item" data-page="reports" onclick="WMS.navigate('reports')">
+          <i class="fas fa-chart-bar"></i><span>Reports</span>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="WMS.navigate('settings')">
+        <div class="sidebar-avatar" id="sidebar-avatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-username">Admin</div>
+          <div class="sidebar-user-role" id="sidebar-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <!-- HEADER -->
+    <header class="header">
+      <button class="header-toggle" onclick="WMS.toggleSidebar()" title="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="header-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search materials, vehicles, racks..." id="global-search" onkeyup="WMS.globalSearch(this.value)">
+      </div>
+      <div class="header-actions">
+        <button class="header-notif-btn" id="notif-btn" onclick="WMS.toggleNotifDropdown()">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notif-badge">0</span>
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-dropdown-header">
+              <span>Notifications</span>
+              <span class="form-link" onclick="WMS.markAllRead()">Mark all read</span>
+            </div>
+            <div id="notif-list"></div>
+          </div>
+        </button>
+        <button class="header-theme-btn" onclick="WMS.toggleTheme()" title="Toggle theme">
+          <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
+        <button class="header-toggle" onclick="WMS.logout()" title="Logout" style="color:var(--danger)">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- PAGE CONTAINER -->
+    <div class="page-container">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title"><i class="fas fa-tachometer-alt"></i>Dashboard</div>
+            <div class="page-subtitle" id="dash-date"></div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="WMS.loadDashboard()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="kpi-grid" id="dash-kpi-grid">
+          <div class="kpi-card" style="--kpi-color:var(--accent)"><div class="kpi-icon" style="background:var(--accent-dim);color:var(--accent)"><i class="fas fa-truck"></i></div><div class="kpi-value" id="kpi-vehicles">-</div><div class="kpi-label">Total Vehicles Today</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--warning)"><div class="kpi-icon" style="background:var(--warning-dim);color:var(--warning)"><i class="fas fa-clock"></i></div><div class="kpi-value" id="kpi-waiting">-</div><div class="kpi-label">Vehicles Waiting</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--danger)"><div class="kpi-icon" style="background:var(--danger-dim);color:var(--danger)"><i class="fas fa-boxes-stacked"></i></div><div class="kpi-value" id="kpi-pending-unload">-</div><div class="kpi-label">Pending Unload</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--success)"><div class="kpi-icon" style="background:var(--success-dim);color:var(--success)"><i class="fas fa-warehouse"></i></div><div class="kpi-value" id="kpi-putaway">-</div><div class="kpi-label">Today's Putaway</div></div>
+          <div class="kpi-card" style="--kpi-color:#ab47bc"><div class="kpi-icon" style="background:rgba(171,71,188,0.15);color:#ab47bc"><i class="fas fa-barcode"></i></div><div class="kpi-value" id="kpi-piv">-</div><div class="kpi-label">Today's PIV</div></div>
+          <div class="kpi-card" style="--kpi-color:#ff6b35"><div class="kpi-icon" style="background:rgba(255,107,53,0.15);color:#ff6b35"><i class="fas fa-hand-holding"></i></div><div class="kpi-value" id="kpi-picking">-</div><div class="kpi-label">Today's Picking</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--info)"><div class="kpi-icon" style="background:var(--info-dim);color:var(--info)"><i class="fas fa-cubes"></i></div><div class="kpi-value" id="kpi-materials">-</div><div class="kpi-label">Total Materials</div></div>
+          <div class="kpi-card" style="--kpi-color:#26a69a"><div class="kpi-icon" style="background:rgba(38,166,154,0.15);color:#26a69a"><i class="fas fa-th-large"></i></div><div class="kpi-value" id="kpi-racks">-</div><div class="kpi-label">Total Racks</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--success)"><div class="kpi-icon" style="background:var(--success-dim);color:var(--success)"><i class="fas fa-check-circle"></i></div><div class="kpi-value" id="kpi-occupied">-</div><div class="kpi-label">Occupied Racks</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--text-muted)"><div class="kpi-icon" style="background:rgba(85,102,119,0.15);color:var(--text-muted)"><i class="fas fa-circle"></i></div><div class="kpi-value" id="kpi-empty">-</div><div class="kpi-label">Empty Racks</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--danger)"><div class="kpi-icon" style="background:var(--danger-dim);color:var(--danger)"><i class="fas fa-exclamation-triangle"></i></div><div class="kpi-value" id="kpi-diff">-</div><div class="kpi-label">Today's Differences</div></div>
+          <div class="kpi-card" style="--kpi-color:var(--accent)"><div class="kpi-icon" style="background:var(--accent-dim);color:var(--accent)"><i class="fas fa-file-alt"></i></div><div class="kpi-value" id="kpi-reports">-</div><div class="kpi-label">Today's Reports</div></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header"><span><i class="fas fa-chart-line" style="color:var(--accent);margin-right:8px"></i>Rack Utilization</span></div>
+            <div class="card-body"><div class="chart-container"><canvas id="chart-rack-util"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span><i class="fas fa-fire" style="color:var(--warning);margin-right:8px"></i>Warehouse Heat Map</span></div>
+            <div class="card-body"><div class="heatmap-grid" id="heatmap-grid"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span><i class="fas fa-truck" style="color:var(--accent);margin-right:8px"></i>Vehicle Timeline</span></div>
+            <div class="card-body"><div class="timeline" id="vehicle-timeline"><div class="empty-state"><i class="fas fa-truck"></i><p>No vehicles today</p></div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span><i class="fas fa-bolt" style="color:var(--warning);margin-right:8px"></i>Recent Actions</span></div>
+            <div class="card-body"><ul class="widget-list" id="recent-actions"><li class="empty-state" style="border:none;padding:20px"><p>No recent actions</p></li></ul></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span><i class="fas fa-arrow-trend-up" style="color:var(--success);margin-right:8px"></i>Top Moving Materials</span></div>
+            <div class="card-body"><ul class="widget-list" id="top-materials"><li class="empty-state" style="border:none;padding:20px"><p>No data</p></li></ul></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span><i class="fas fa-exclamation-circle" style="color:var(--danger);margin-right:8px"></i>Low Stock Alerts</span></div>
+            <div class="card-body"><ul class="widget-list" id="low-stock-list"><li class="empty-state" style="border:none;padding:20px"><p>No low stock alerts</p></li></ul></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><span><i class="fas fa-link" style="color:var(--accent);margin-right:8px"></i>Quick Links</span></div>
+          <div class="card-body">
+            <div class="quick-links">
+              <div class="quick-link" onclick="WMS.navigate('vehicle-entry')"><i class="fas fa-truck"></i><span>New Vehicle</span></div>
+              <div class="quick-link" onclick="WMS.navigate('unload')"><i class="fas fa-boxes-stacked"></i><span>Unload</span></div>
+              <div class="quick-link" onclick="WMS.navigate('putaway')"><i class="fas fa-warehouse"></i><span>Putaway</span></div>
+              <div class="quick-link" onclick="WMS.navigate('piv')"><i class="fas fa-barcode"></i><span>PIV</span></div>
+              <div class="quick-link" onclick="WMS.navigate('picking')"><i class="fas fa-hand-holding"></i><span>Picking</span></div>
+              <div class="quick-link" onclick="WMS.navigate('location')"><i class="fas fa-map-marker-alt"></i><span>Location</span></div>
+              <div class="quick-link" onclick="WMS.navigate('rack-master')"><i class="fas fa-th-large"></i><span>Racks</span></div>
+              <div class="quick-link" onclick="WMS.navigate('ai-assistant')"><i class="fas fa-robot"></i><span>AI Chat</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ VEHICLE ENTRY ═══ -->
+      <section class="page" id="page-vehicle-entry">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-truck"></i>Vehicle Entry</div><div class="page-subtitle">Register new vehicle at gate</div></div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form id="vehicle-form" onsubmit="WMS.saveVehicle(event)">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Vehicle Number *</label>
+                  <input type="text" class="form-input" id="vf-number" placeholder="e.g. MH-12-AB-1234" required>
+                </div>
+                <div class="form-group">
+                  <label>LR Number</label>
+                  <input type="text" class="form-input" id="vf-lr" placeholder="LR number">
+                </div>
+                <div class="form-group">
+                  <label>Driver Name *</label>
+                  <input type="text" class="form-input" id="vf-driver" placeholder="Full name" required>
+                </div>
+                <div class="form-group">
+                  <label>Driver Mobile (10 digits)</label>
+                  <input type="tel" class="form-input" id="vf-mobile" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
+                  <div class="form-error" id="vf-mobile-error">Must be exactly 10 digits</div>
+                </div>
+                <div class="form-group">
+                  <label>Transport Name</label>
+                  <input type="text" class="form-input" id="vf-transport" placeholder="Transport company">
+                </div>
+                <div class="form-group">
+                  <label>Dock Number</label>
+                  <input type="text" class="form-input" id="vf-dock" placeholder="e.g. D-01">
+                </div>
+                <div class="form-group">
+                  <label class="form-label-with-action">Vehicle Photo<span class="form-link" onclick="WMS.openScanner('vf-photo-preview')">Camera</span></label>
+                  <input type="file" class="form-input" id="vf-photo" accept="image/*">
+                  <img id="vf-photo-preview" style="display:none;max-width:100%;max-height:100px;margin-top:6px;border-radius:8px;border:1px solid var(--border)">
+                </div>
+                <div class="form-group">
+                  <label class="form-label-with-action">Driver Photo<span class="form-link" onclick="WMS.openScanner('vf-driver-photo-preview')">Camera</span></label>
+                  <input type="file" class="form-input" id="vf-driver-photo" accept="image/*">
+                  <img id="vf-driver-photo-preview" style="display:none;max-width:100%;max-height:100px;margin-top:6px;border-radius:8px;border:1px solid var(--border)">
+                </div>
+                <div class="form-group form-full">
+                  <label>Remarks</label>
+                  <textarea class="form-input" id="vf-remarks" placeholder="Any remarks..."></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Vehicle</button>
+                  <button type="reset" class="btn btn-secondary" onclick="WMS.resetVehicleForm()"><i class="fas fa-times"></i> Clear</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ VEHICLE LIST ═══ -->
+      <section class="page" id="page-vehicle-list">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-list"></i>Vehicle List</div><div class="page-subtitle">All registered vehicles</div></div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="WMS.navigate('vehicle-entry')"><i class="fas fa-plus"></i> New Vehicle</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('vehicles')"><i class="fas fa-file-excel"></i> Export</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search vehicle, driver, LR..." id="vl-search" onkeyup="WMS.debounce(()=>WMS.loadVehicles(),300)">
+          <select id="vl-status" onchange="WMS.loadVehicles()">
+            <option value="">All Status</option>
+            <option value="Pending Unload">Pending Unload</option>
+            <option value="Unloading">Unloading</option>
+            <option value="Unloaded">Unloaded</option>
+          </select>
+          <input type="date" id="vl-from" onchange="WMS.loadVehicles()">
+          <input type="date" id="vl-to" onchange="WMS.loadVehicles()">
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table" id="vehicle-table">
+              <thead><tr><th>Vehicle No</th><th>Driver</th><th>Mobile</th><th>Transport</th><th>Dock</th><th>Gate Entry</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="vehicle-table-body"><tr><td colspan="8" class="empty-state"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="vehicle-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ UNLOAD PROCESS ═══ -->
+      <section class="page" id="page-unload">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-boxes-stacked"></i>Unload Process</div><div class="page-subtitle">Scan and unload materials from vehicles</div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><span>Select Vehicle</span></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Vehicle</label>
+                <select class="form-input" id="ul-vehicle" onchange="WMS.loadUnloadInvoices()">
+                  <option value="">-- Select Vehicle --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Invoice</label>
+                <select class="form-input" id="ul-invoice" onchange="WMS.loadUnloadMaterials()">
+                  <option value="">-- Select Invoice --</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <span>Scan / Enter Material</span>
+            <button class="btn btn-sm btn-secondary" onclick="WMS.openScanner('ul-ean')"><i class="fas fa-camera"></i> Camera</button>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>EAN / Barcode</label>
+                <input type="text" class="form-input" id="ul-ean" placeholder="Scan or type EAN" onkeyup="if(event.key==='Enter')WMS.lookupEAN()">
+              </div>
+              <div class="form-group">
+                <label>Material Name</label>
+                <input type="text" class="form-input" id="ul-material" placeholder="Auto-filled or manual">
+              </div>
+              <div class="form-group">
+                <label>Invoice Qty</label>
+                <input type="number" class="form-input" id="ul-inv-qty" readonly>
+              </div>
+              <div class="form-group">
+                <label>Unloaded Qty *</label>
+                <input type="number" class="form-input" id="ul-unload-qty" placeholder="Enter quantity" step="0.01" min="0">
+              </div>
+              <div class="form-group form-full">
+                <label>Difference Reason (if mismatch)</label>
+                <input type="text" class="form-input" id="ul-reason" placeholder="Reason for quantity difference">
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="WMS.saveUnload()"><i class="fas fa-check"></i> Save Unload</button>
+                <button class="btn btn-success" onclick="WMS.completeInvoiceUnload()"><i class="fas fa-flag-checkered"></i> Complete Invoice</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span>Invoice Materials</span></div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Material</th><th>EAN</th><th>Invoice Qty</th><th>Unloaded</th><th>Remaining</th></tr></thead>
+              <tbody id="ul-materials-body"><tr><td colspan="5" class="empty-state"><p>Select vehicle and invoice</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ DIFFERENCES ═══ -->
+      <section class="page" id="page-differences">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-triangle-exclamation"></i>Difference Reports</div><div class="page-subtitle">Quantity discrepancies during unload</div></div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('differences')"><i class="fas fa-file-excel"></i> Export</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportPDF('differences')"><i class="fas fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <select id="diff-status" onchange="WMS.loadDifferences()">
+            <option value="">All Status</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option>
+          </select>
+          <input type="date" id="diff-from" onchange="WMS.loadDifferences()">
+          <input type="date" id="diff-to" onchange="WMS.loadDifferences()">
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Diff Number</th><th>Material</th><th>Invoice Qty</th><th>Received</th><th>Difference</th><th>Diff %</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="diff-table-body"><tr><td colspan="9" class="empty-state"><p>No differences</p></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="diff-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ PUTAWAY ═══ -->
+      <section class="page" id="page-putaway">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-warehouse"></i>Putaway</div><div class="page-subtitle">Place materials into rack locations</div></div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form onsubmit="WMS.savePutaway(event)">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Rack Code *</label>
+                  <div style="display:flex;gap:6px">
+                    <input type="text" class="form-input" id="pa-rack" placeholder="Scan or type rack" required style="flex:1">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="WMS.openScanner('pa-rack')"><i class="fas fa-camera"></i></button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>EAN / Barcode</label>
+                  <div style="display:flex;gap:6px">
+                    <input type="text" class="form-input" id="pa-ean" placeholder="Scan EAN" onkeyup="if(event.key==='Enter')WMS.lookupEAN('pa-')" style="flex:1">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="WMS.openScanner('pa-ean')"><i class="fas fa-camera"></i></button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Material Name *</label>
+                  <input type="text" class="form-input" id="pa-material" placeholder="Auto or manual" required>
+                </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  <input type="text" class="form-input" id="pa-desc" placeholder="Description">
+                </div>
+                <div class="form-group">
+                  <label>Packing</label>
+                  <input type="text" class="form-input" id="pa-packing" placeholder="e.g. 5 KG Bag">
+                </div>
+                <div class="form-group">
+                  <label>Box Number</label>
+                  <input type="text" class="form-input" id="pa-box" placeholder="Box number">
+                </div>
+                <div class="form-group">
+                  <label>Quantity *</label>
+                  <input type="number" class="form-input" id="pa-qty" placeholder="Quantity" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group">
+                  <label>Brand</label>
+                  <input type="text" class="form-input" id="pa-brand" placeholder="Brand">
+                </div>
+                <div class="form-group">
+                  <label>Division</label>
+                  <input type="text" class="form-input" id="pa-division" placeholder="Division">
+                </div>
+                <div class="form-group" style="display:flex;align-items:flex-end">
+                  <button class="btn btn-primary btn-lg" style="width:100%" type="submit"><i class="fas fa-check"></i> PUTAWAY</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><span>Recent Putaways</span></div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Date</th><th>Rack</th><th>Material</th><th>EAN</th><th>Qty</th><th>By</th></tr></thead>
+              <tbody id="pa-recent-body"><tr><td colspan="6" class="empty-state"><p>No putaways yet</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PIV ═══ -->
+      <section class="page" id="page-piv">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-barcode"></i>PIV</div><div class="page-subtitle">Physical Inventory Verification</div></div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form onsubmit="WMS.savePIV(event)">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>EAN / Barcode</label>
+                  <div style="display:flex;gap:6px">
+                    <input type="text" class="form-input" id="piv-ean" placeholder="Scan EAN" onkeyup="if(event.key==='Enter')WMS.lookupEAN('piv-')" style="flex:1">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="WMS.openScanner('piv-ean')"><i class="fas fa-camera"></i></button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Material Name *</label>
+                  <input type="text" class="form-input" id="piv-material" required placeholder="Material name">
+                </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  <input type="text" class="form-input" id="piv-desc" placeholder="Description">
+                </div>
+                <div class="form-group">
+                  <label>Packing</label>
+                  <input type="text" class="form-input" id="piv-packing" placeholder="Packing">
+                </div>
+                <div class="form-group">
+                  <label>Box Number</label>
+                  <input type="text" class="form-input" id="piv-box" placeholder="Box number">
+                </div>
+                <div class="form-group">
+                  <label>Quantity *</label>
+                  <input type="number" class="form-input" id="piv-qty" required placeholder="Quantity" step="0.01" min="0.01">
+                </div>
+                <div class="form-group" style="display:flex;align-items:flex-end">
+                  <button class="btn btn-primary btn-lg" style="width:100%" type="submit"><i class="fas fa-check"></i> PIV</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><span>Recent PIV Records</span></div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Date</th><th>Material</th><th>EAN</th><th>Packing</th><th>Box</th><th>Qty</th><th>By</th></tr></thead>
+              <tbody id="piv-recent-body"><tr><td colspan="7" class="empty-state"><p>No PIV records</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ LOCATION MASTER ═══ -->
+      <section class="page" id="page-location">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-map-marker-alt"></i>Location Master</div><div class="page-subtitle">All material locations in warehouse</div></div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="WMS.showBulkUpload('location')"><i class="fas fa-upload"></i> Bulk Upload</button>
+            <button class="btn btn-danger btn-sm" onclick="WMS.bulkDeleteLocation()"><i class="fas fa-trash"></i> Bulk Delete</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('location')"><i class="fas fa-file-excel"></i> Excel</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportPDF('location')"><i class="fas fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search material, EAN, rack..." id="loc-search" onkeyup="WMS.debounce(()=>WMS.loadLocations(),300)">
+          <input type="text" placeholder="Rack" id="loc-rack" style="max-width:120px" onkeyup="WMS.debounce(()=>WMS.loadLocations(),300)">
+          <input type="text" placeholder="Brand" id="loc-brand" style="max-width:120px" onkeyup="WMS.debounce(()=>WMS.loadLocations(),300)">
+          <select id="loc-division" onchange="WMS.loadLocations()" style="max-width:140px">
+            <option value="">All Division</option><option>FMCG</option><option>Personal Care</option><option>Home Care</option>
+          </select>
+          <select id="loc-action" onchange="WMS.loadLocations()" style="max-width:140px">
+            <option value="">All Actions</option><option>PUTAWAY</option><option>PIV</option><option>PICK</option><option>PICK_REVERSE</option>
+          </select>
+          <input type="date" id="loc-from" onchange="WMS.loadLocations()">
+          <input type="date" id="loc-to" onchange="WMS.loadLocations()">
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th><input type="checkbox" id="loc-check-all" onchange="WMS.toggleAllCheckboxes('loc')"></th><th>Date</th><th>Rack</th><th>EAN</th><th>Material</th><th>Brand</th><th>Division</th><th>Packing</th><th>Box</th><th>Qty</th><th>Action</th><th>By</th></tr></thead>
+              <tbody id="loc-table-body"><tr><td colspan="12" class="empty-state"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="loc-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ WAREHOUSE MAP ═══ -->
+      <section class="page" id="page-warehouse-map">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-map"></i>Warehouse Map</div><div class="page-subtitle">Visual rack occupancy overview</div></div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="WMS.loadWarehouseMap()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="warehouse-map-container">
+            <div class="empty-state"><div class="spinner" style="margin:0 auto"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PICKING REPORTS ═══ -->
+      <section class="page" id="page-picking">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-hand-holding"></i>Picking Reports</div><div class="page-subtitle">Create and manage picking lists</div></div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="WMS.showCreatePicking()"><i class="fas fa-plus"></i> New Picking</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('picking')"><i class="fas fa-file-excel"></i> Export</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search report number, picker..." id="pick-search" onkeyup="WMS.debounce(()=>WMS.loadPickingReports(),300)">
+          <select id="pick-status" onchange="WMS.loadPickingReports()">
+            <option value="">All Status</option><option>Open</option><option>In Progress</option><option>Completed</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Report No</th><th>Picker</th><th>Items</th><th>Total Qty</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="pick-table-body"><tr><td colspan="7" class="empty-state"><p>No picking reports</p></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="pick-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ PICK HISTORY ═══ -->
+      <section class="page" id="page-pick-history">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-history"></i>Pick Material History</div><div class="page-subtitle">Audit trail for picking modifications</div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Report Number</label>
+                <input type="text" class="form-input" id="ph-report-no" placeholder="e.g. PCK-20250101-00001">
+              </div>
+              <div class="form-group" style="display:flex;align-items:flex-end">
+                <button class="btn btn-primary" onclick="WMS.loadPickHistory()"><i class="fas fa-search"></i> Load History</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Action No</th><th>Material</th><th>Action</th><th>Old Qty</th><th>New Qty</th><th>Old Rack</th><th>New Rack</th><th>By</th><th>Date</th></tr></thead>
+              <tbody id="ph-table-body"><tr><td colspan="9" class="empty-state"><p>Enter report number to view history</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ RACK MASTER ═══ -->
+      <section class="page" id="page-rack-master">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-th-large"></i>Rack Master</div><div class="page-subtitle">Manage warehouse rack configurations</div></div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="WMS.showAddRacks()"><i class="fas fa-plus"></i> Add Racks</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.showBulkUpload('rack')"><i class="fas fa-upload"></i> Bulk Upload</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('racks')"><i class="fas fa-file-excel"></i> Export</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search rack code, zone..." id="rack-search" onkeyup="WMS.debounce(()=>WMS.loadRacks(),300)">
+          <select id="rack-zone" onchange="WMS.loadRacks()">
+            <option value="">All Zones</option><option>Zone A</option><option>Zone B</option><option>Zone C</option><option>Zone D</option><option>Zone E</option>
+          </select>
+          <select id="rack-status" onchange="WMS.loadRacks()">
+            <option value="">All Status</option><option>Empty</option><option>Occupied</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Rack Code</th><th>Type</th><th>Zone</th><th>Capacity</th><th>Current Load</th><th>Utilization</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="rack-table-body"><tr><td colspan="8" class="empty-state"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="rack-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ MATERIAL MASTER ═══ -->
+      <section class="page" id="page-material-master">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-cubes"></i>Material Master</div><div class="page-subtitle">Manage product/material catalog</div></div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="WMS.showAddMaterial()"><i class="fas fa-plus"></i> Add Material</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.showBulkUpload('material')"><i class="fas fa-upload"></i> Bulk Upload</button>
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('materials')"><i class="fas fa-file-excel"></i> Export</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search material, EAN, brand..." id="mat-search" onkeyup="WMS.debounce(()=>WMS.loadMaterials(),300)">
+          <input type="text" placeholder="EAN" id="mat-ean" style="max-width:140px" onkeyup="WMS.debounce(()=>WMS.loadMaterials(),300)">
+          <select id="mat-brand" onchange="WMS.loadMaterials()">
+            <option value="">All Brands</option><option>Tata</option><option>Fortune</option><option>Aashirvaad</option><option>Madhur</option><option>Dove</option>
+          </select>
+          <select id="mat-division" onchange="WMS.loadMaterials()">
+            <option value="">All Division</option><option>FMCG</option><option>Personal Care</option><option>Home Care</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Code</th><th>Material Name</th><th>EAN</th><th>Brand</th><th>Division</th><th>Packing</th><th>Unit</th><th>Stock</th><th>Min Stock</th><th>Actions</th></tr></thead>
+              <tbody id="mat-table-body"><tr><td colspan="10" class="empty-state"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="mat-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ USER MANAGEMENT ═══ -->
+      <section class="page" id="page-users">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-users-cog"></i>User Management</div><div class="page-subtitle">Manage system users and roles</div></div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="WMS.showCreateUser()"><i class="fas fa-user-plus"></i> Create User</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search username, name, email..." id="user-search" onkeyup="WMS.debounce(()=>WMS.loadUsers(),300)">
+          <select id="user-role" onchange="WMS.loadUsers()">
+            <option value="">All Roles</option><option>Super Admin</option><option>Admin</option><option>Warehouse Manager</option><option>Supervisor</option><option>Operator</option><option>Auditor</option><option>Viewer</option>
+          </select>
+          <select id="user-status" onchange="WMS.loadUsers()">
+            <option value="">All</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="locked">Locked</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+              <tbody id="user-table-body"><tr><td colspan="7" class="empty-state"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="user-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ AUDIT LOG ═══ -->
+      <section class="page" id="page-audit">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-clipboard-list"></i>Audit Log</div><div class="page-subtitle">Complete system action history</div></div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="WMS.exportExcel('audit')"><i class="fas fa-file-excel"></i> Export</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" placeholder="Search action number, module..." id="audit-search" onkeyup="WMS.debounce(()=>WMS.loadAudit(),300)">
+          <select id="audit-module" onchange="WMS.loadAudit()">
+            <option value="">All Modules</option><option>inbound</option><option>putaway</option><option>piv</option><option>location</option><option>picking</option><option>rack</option><option>material</option><option>users</option><option>settings</option><option>auth</option>
+          </select>
+          <input type="date" id="audit-from" onchange="WMS.loadAudit()">
+          <input type="date" id="audit-to" onchange="WMS.loadAudit()">
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Action No</th><th>Module</th><th>Action</th><th>User</th><th>IP Address</th><th>Date Time</th></tr></thead>
+              <tbody id="audit-table-body"><tr><td colspan="6" class="empty-state"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-footer"><div class="pagination" id="audit-pagination"></div></div>
+        </div>
+      </section>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <section class="page" id="page-settings">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-cog"></i>Settings</div><div class="page-subtitle">System configuration</div></div>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="WMS.switchTab(this,'tab-general')">General</button>
+          <button class="tab-btn" onclick="WMS.switchTab(this,'tab-security')">Security</button>
+          <button class="tab-btn" onclick="WMS.switchTab(this,'tab-email')">Email / SMTP</button>
+          <button class="tab-btn" onclick="WMS.switchTab(this,'tab-scanner')">Scanner / Camera</button>
+          <button class="tab-btn" onclick="WMS.switchTab(this,'tab-warehouse')">Warehouse</button>
+          <button class="tab-btn" onclick="WMS.switchTab(this,'tab-ai')">AI Settings</button>
+        </div>
+        <div class="tab-content active" id="tab-general">
+          <div class="card"><div class="card-body">
+            <div class="form-grid">
+              <div class="form-group"><label>Company Name</label><input type="text" class="form-input" id="set-company"></div>
+              <div class="form-group"><label>Theme</label><select class="form-input" id="set-theme" onchange="WMS.toggleTheme()"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+              <div class="form-group form-full"><div class="form-actions"><button class="btn btn-primary" onclick="WMS.saveSettings()"><i class="fas fa-save"></i> Save</button></div></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="tab-content" id="tab-security">
+          <div class="card"><div class="card-body">
+            <div class="form-grid">
+              <div class="form-group"><label>Session Timeout (minutes)</label><input type="number" class="form-input" id="set-session-timeout" min="5" max="480"></div>
+              <div class="form-group"><label>Max Failed Logins</label><input type="number" class="form-input" id="set-max-fails" min="3" max="20"></div>
+              <div class="form-group"><label>Password Min Length</label><input type="number" class="form-input" id="set-pwd-min" min="6" max="32"></div>
+              <div class="form-group"><label>Require Uppercase</label><select class="form-input" id="set-pwd-upper"><option value="true">Yes</option><option value="false">No</option></select></div>
+              <div class="form-group"><label>Require Number</label><select class="form-input" id="set-pwd-num"><option value="true">Yes</option><option value="false">No</option></select></div>
+              <div class="form-group"><label>Require Special Char</label><select class="form-input" id="set-pwd-special"><option value="true">Yes</option><option value="false">No</option></select></div>
+              <div class="form-group form-full"><div class="form-actions"><button class="btn btn-primary" onclick="WMS.saveSettings()"><i class="fas fa-save"></i> Save</button></div></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="tab-content" id="tab-email">
+          <div class="card"><div class="card-body">
+            <div class="form-grid">
+              <div class="form-group"><label>SMTP Host</label><input type="text" class="form-input" id="set-smtp-host" placeholder="smtp.gmail.com"></div>
+              <div class="form-group"><label>SMTP Port</label><input type="number" class="form-input" id="set-smtp-port" value="587"></div>
+              <div class="form-group"><label>SMTP User</label><input type="text" class="form-input" id="set-smtp-user" placeholder="email@gmail.com"></div>
+              <div class="form-group"><label>SMTP Password</label><input type="password" class="form-input" id="set-smtp-pass"></div>
+              <div class="form-group"><label>From Email</label><input type="email" class="form-input" id="set-smtp-from" placeholder="wms@company.com"></div>
+              <div class="form-group form-full"><div class="form-actions"><button class="btn btn-primary" onclick="WMS.saveSettings()"><i class="fas fa-save"></i> Save</button></div></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="tab-content" id="tab-scanner">
+          <div class="card"><div class="card-body">
+            <div class="form-grid">
+              <div class="form-group"><label>Scanner Type</label><select class="form-input" id="set-scanner-type"><option value="usb">USB Scanner</option><option value="bluetooth">Bluetooth Scanner</option><option value="camera">Camera Scanner</option></select></div>
+              <div class="form-group"><label>Camera Facing</label><select class="form-input" id="set-camera-facing"><option value="environment">Back Camera</option><option value="user">Front Camera</option></select></div>
+              <div class="form-group form-full"><div class="form-actions"><button class="btn btn-primary" onclick="WMS.saveSettings()"><i class="fas fa-save"></i> Save</button></div></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="tab-content" id="tab-warehouse">
+          <div class="card"><div class="card-body">
+            <div class="form-grid">
+              <div class="form-group"><label>Warehouse Name</label><input type="text" class="form-input" id="set-wh-name"></div>
+              <div class="form-group"><label>Low Stock Threshold</label><input type="number" class="form-input" id="set-low-stock" min="1"></div>
+              <div class="form-group form-full"><div class="form-actions"><button class="btn btn-primary" onclick="WMS.saveSettings()"><i class="fas fa-save"></i> Save</button></div></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="tab-content" id="tab-ai">
+          <div class="card"><div class="card-body">
+            <div class="form-grid">
+              <div class="form-group"><label>Auto Suggest Rack</label><select class="form-input" id="set-ai-rack"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+              <div class="form-group"><label>AI Assistant</label><select class="form-input" id="set-ai-assistant"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+              <div class="form-group form-full"><div class="form-actions"><button class="btn btn-primary" onclick="WMS.saveSettings()"><i class="fas fa-save"></i> Save</button></div></div>
+            </div>
+          </div></div>
+        </div>
+      </section>
+
+      <!-- ═══ AI ASSISTANT ═══ -->
+      <section class="page" id="page-ai-assistant">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-robot"></i>AI Assistant</div><div class="page-subtitle">Smart warehouse intelligence</div></div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="ai-chat-container">
+              <div class="ai-chat-messages" id="ai-messages">
+                <div class="ai-msg bot">
+                  <div class="ai-msg-avatar"><i class="fas fa-robot"></i></div>
+                  <div class="ai-msg-bubble">Hello! I'm your AI warehouse assistant. Ask me about pending unloads, empty racks, low stock, material search, or any warehouse data. Try: <br><br>
+                    <strong>"How many vehicles pending unload?"</strong><br>
+                    <strong>"Find material Rice"</strong><br>
+                    <strong>"Show low stock items"</strong><br>
+                    <strong>"How many empty racks?"</strong><br>
+                    <strong>"Today's putaway count"</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="ai-chat-input">
+                <input type="text" id="ai-input" placeholder="Ask me anything about your warehouse..." onkeyup="if(event.key==='Enter')WMS.sendAIChat()">
+                <button class="btn btn-primary" onclick="WMS.sendAIChat()"><i class="fas fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ REPORTS ═══ -->
+      <section class="page" id="page-reports">
+        <div class="page-header">
+          <div><div class="page-title"><i class="fas fa-chart-bar"></i>Reports</div><div class="page-subtitle">Generate and export reports</div></div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card" style="--kpi-color:var(--success);cursor:pointer" onclick="WMS.exportExcel('vehicles')">
+            <div class="kpi-icon" style="background:var(--success-dim);color:var(--success)"><i class="fas fa-truck"></i></div>
+            <div class="kpi-label">Vehicle Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+              <span class="badge badge-accent"><i class="fas fa-file-pdf"></i> PDF</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--kpi-color:var(--accent);cursor:pointer" onclick="WMS.exportExcel('location')">
+            <div class="kpi-icon" style="background:var(--accent-dim);color:var(--accent)"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="kpi-label">Location Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+              <span class="badge badge-accent"><i class="fas fa-file-pdf"></i> PDF</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--kpi-color:var(--warning);cursor:pointer" onclick="WMS.exportExcel('materials')">
+            <div class="kpi-icon" style="background:var(--warning-dim);color:var(--warning)"><i class="fas fa-cubes"></i></div>
+            <div class="kpi-label">Material Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+              <span class="badge badge-accent"><i class="fas fa-file-pdf"></i> PDF</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--kpi-color:var(--danger);cursor:pointer" onclick="WMS.exportExcel('differences')">
+            <div class="kpi-icon" style="background:var(--danger-dim);color:var(--danger)"><i class="fas fa-triangle-exclamation"></i></div>
+            <div class="kpi-label">Difference Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+              <span class="badge badge-accent"><i class="fas fa-file-pdf"></i> PDF</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--kpi-color:#ab47bc;cursor:pointer" onclick="WMS.exportExcel('picking')">
+            <div class="kpi-icon" style="background:rgba(171,71,188,0.15);color:#ab47bc"><i class="fas fa-hand-holding"></i></div>
+            <div class="kpi-label">Picking Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--kpi-color:var(--info);cursor:pointer" onclick="WMS.exportExcel('racks')">
+            <div class="kpi-icon" style="background:var(--info-dim);color:var(--info)"><i class="fas fa-th-large"></i></div>
+            <div class="kpi-label">Rack Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--kpi-color:#26a69a;cursor:pointer" onclick="WMS.exportExcel('audit')">
+            <div class="kpi-icon" style="background:rgba(38,166,154,0.15);color:#26a69a"><i class="fas fa-clipboard-list"></i></div>
+            <div class="kpi-label">Audit Report</div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-success"><i class="fas fa-file-excel"></i> Excel</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /page-container -->
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════════════
+     SCANNER OVERLAY
+     ═══════════════════════════════════════════ -->
+<div class="scanner-overlay" id="scanner-overlay">
+  <div class="scanner-video-wrap">
+    <video id="scanner-video" autoplay playsinline></video>
+    <div class="scanner-crosshair"></div>
+  </div>
+  <button class="scanner-close" onclick="WMS.closeScanner()"><i class="fas fa-times"></i> Close Scanner</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL CONTAINER
+     ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-container">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Modal</div>
+      <button class="modal-close" onclick="WMS.closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TOAST CONTAINER
+     ═══════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════
+     MINIMAL INLINE JS (UI interactions only)
+     ═══════════════════════════════════════════ -->
+<script>
+// Particle background
+(function(){
+  const c = document.getElementById('particles-canvas');
+  const ctx = c.getContext('2d');
+  let particles = [];
+  function resize(){ c.width = window.innerWidth; c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for(let i = 0; i < 50; i++){
+    particles.push({
+      x: Math.random()*c.width, y: Math.random()*c.height,
+      vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+      r: Math.random()*1.5+0.5, a: Math.random()*0.4+0.1
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0) p.x = c.width; if(p.x > c.width) p.x = 0;
+      if(p.y < 0) p.y = c.height; if(p.y > c.height) p.y = 0;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,229,255,'+p.a+')'; ctx.fill();
+    });
+    // Draw lines between close particles
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d < 120){
+          ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle='rgba(0,229,255,'+(0.08*(1-d/120))+')';
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Ripple effect on buttons
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.btn');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width * 100) + '%';
+  const y = ((e.clientY - rect.top) / rect.height * 100) + '%';
+  btn.style.setProperty('--x', x);
+  btn.style.setProperty('--y', y);
+});
+
+// Photo preview
+document.getElementById('vf-photo').addEventListener('change', function(e){
+  const img = document.getElementById('vf-photo-preview');
+  if(e.target.files[0]){ img.src = URL.createObjectURL(e.target.files[0]); img.style.display='block'; }
+});
+document.getElementById('vf-driver-photo').addEventListener('change', function(e){
+  const img = document.getElementById('vf-driver-photo-preview');
+  if(e.target.files[0]){ img.src = URL.createObjectURL(e.target.files[0]); img.style.display='block'; }
+});
+
+// Close notif dropdown on outside click
+document.addEventListener('click', function(e){
+  const btn = document.getElementById('notif-btn');
+  const dd = document.getElementById('notif-dropdown');
+  if(!btn.contains(e.target)) dd.classList.remove('open');
+});
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if(e.target === this) WMS.closeModal();
+});
+
+// Login enter key
+document.getElementById('login-password').addEventListener('keyup', function(e){
+  if(e.key === 'Enter') WMS.login();
+});
+
+// Mobile sidebar close on outside click
+document.addEventListener('click', function(e){
+  if(window.innerWidth <= 768){
+    const sb = document.getElementById('sidebar');
+    if(sb.classList.contains('mobile-open') && !sb.contains(e.target) && !e.target.closest('.header-toggle')){
+      sb.classList.remove('mobile-open');
+    }
+  }
+});
+</script>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APPLICATION JS (app.js will override WMS)
+     This is a placeholder so the page doesn't crash
+     before app.js loads. app.js replaces this.
+     ═══════════════════════════════════════════ -->
+<script>
+window.WMS = window.WMS || {};
+// These stubs prevent errors if app.js hasn't loaded yet
+['login','logout','navigate','toggleSidebar','toggleTheme','toggleNotifDropdown',
+ 'markAllRead','loadDashboard','saveVehicle','resetVehicleForm','loadVehicles',
+ 'loadUnloadInvoices','loadUnloadMaterials','lookupEAN','saveUnload',
+ 'completeInvoiceUnload','loadDifferences','savePutaway','savePIV','loadLocations',
+ 'bulkDeleteLocation','toggleAllCheckboxes','loadWarehouseMap','showCreatePicking',
+ 'loadPickingReports','loadPickHistory','loadRacks','showAddRacks','loadMaterials',
+ 'showAddMaterial','loadUsers','showCreateUser','loadAudit','switchTab',
+ 'saveSettings','sendAIChat','openScanner','closeScanner','showBulkUpload',
+ 'showModal','closeModal','showToast','exportExcel','exportPDF','globalSearch',
+ 'debounce','loadSettings','loadNotifications','approveDifference','editUser',
+ 'resetUserPassword','deactivateUser','openVehicleDetail','openPickingDetail',
+ 'suggestRack','verifyStock','aiSearch'
+].forEach(fn => { if(!window.WMS[fn]) window.WMS[fn] = function(){ console.log('WMS.'+fn+' not loaded yet'); }; });
+</script>
+
+<!-- Main app.js loads here and replaces the stubs above -->
+<script>
+  window.API_BASE = 'http://localhost:5000/api';
+</script>
+<script src="app.js"></script>
+
+</body>
+</html>

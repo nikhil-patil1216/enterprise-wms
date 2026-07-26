@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head><title>WMS Connection Test</title></head>
+<body style="background:#111;color:#eee;font-family:monospace;padding:40px">
+<h1>WMS Connection Test</h1>
+<div id="log"></div>
+<script>
+const log = document.getElementById('log');
+function addLog(msg, color) {
+  log.innerHTML += `<div style="color:${color};margin:8px 0;padding:8px;background:#222;border-radius:6px">${msg}</div>`;
+}
+
+addLog('Test 1: Checking backend health...', '#ffab00');
+fetch('http://localhost:5000/api/health')
+  .then(r => {
+    if (r.ok) {
+      addLog('✅ Backend is RUNNING at http://localhost:5000', '#00ff88');
+      return r.json();
+    }
+    throw new Error('Status: ' + r.status);
+  })
+  .then(d => addLog('Response: ' + JSON.stringify(d), '#8899aa'))
+  .catch(e => addLog('❌ Backend NOT reachable: ' + e.message + '<br>→ Make sure "npm start" is running in backend folder', '#ff1744'))
+
+  .then(() => {
+    addLog('<br>Test 2: Checking Supabase connection via login...', '#ffab00');
+    return fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'admin', password: 'Admin@123' })
+    });
+  })
+  .then(r => {
+    if (!r.ok) return r.json().then(d => { throw new Error(d.error); });
+    return r.json();
+  })
+  .then(d => {
+    addLog('✅ Login SUCCESS! Token received.', '#00ff88');
+    addLog('User: ' + d.user.full_name + ' (' + d.user.role + ')', '#8899aa');
+    addLog('Permissions: ' + d.user.permissions.length + ' granted', '#8899aa');
+  })
+  .catch(e => addLog('❌ Login FAILED: ' + e.message + '<br>→ Check .env SUPABASE_URL and SUPABASE_SERVICE_KEY', '#ff1744'))
+
+  .then(() => {
+    addLog('<br>Test 3: Checking CORS...', '#ffab00');
+    return fetch('http://localhost:5000/api/roles', {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.error) throw new Error(d.error);
+    addLog('✅ CORS is OK. Roles found: ' + d.map(r=>r.name).join(', '), '#00ff88');
+  })
+  .catch(e => addLog('❌ CORS or other error: ' + e.message, '#ff1744'));
+</script>
+</body>
+</html>
