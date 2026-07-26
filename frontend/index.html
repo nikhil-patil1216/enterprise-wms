@@ -2118,26 +2118,11 @@ document.addEventListener('click', function(e){
      before app.js loads. app.js replaces this.
      ═══════════════════════════════════════════ -->
 <script>
-window.WMS = window.WMS || {};
-// These stubs prevent errors if app.js hasn't loaded yet
-['login','logout','navigate','toggleSidebar','toggleTheme','toggleNotifDropdown',
- 'markAllRead','loadDashboard','saveVehicle','resetVehicleForm','loadVehicles',
- 'loadUnloadInvoices','loadUnloadMaterials','lookupEAN','saveUnload',
- 'completeInvoiceUnload','loadDifferences','savePutaway','savePIV','loadLocations',
- 'bulkDeleteLocation','toggleAllCheckboxes','loadWarehouseMap','showCreatePicking',
- 'loadPickingReports','loadPickHistory','loadRacks','showAddRacks','loadMaterials',
- 'showAddMaterial','loadUsers','showCreateUser','loadAudit','switchTab',
- 'saveSettings','sendAIChat','openScanner','closeScanner','showBulkUpload',
- 'showModal','closeModal','showToast','exportExcel','exportPDF','globalSearch',
- 'debounce','loadSettings','loadNotifications','approveDifference','editUser',
- 'resetUserPassword','deactivateUser','openVehicleDetail','openPickingDetail',
- 'suggestRack','verifyStock','aiSearch'
-].forEach(fn => { if(!window.WMS[fn]) window.WMS[fn] = function(){ console.log('WMS.'+fn+' not loaded yet'); }; });
+window.API_BASE = 'https://md20-system.onrender.com/api';
 </script>
-
-<!-- Main app.js loads here and replaces the stubs above -->
 <script>
-  window.API_BASE = 'http://localhost:5000/api';
+window.WMS = window.WMS || {};
+['login','logout','navigate','toggleSidebar','toggleTheme','toggleNotifDropdown','markAllRead','loadDashboard','saveVehicle','resetVehicleForm','loadVehicles','loadUnloadInvoices','loadUnloadMaterials','lookupEAN','saveUnload','completeInvoiceUnload','loadDifferences','savePutaway','savePIV','loadLocations','bulkDeleteLocation','toggleAllCheckboxes','loadWarehouseMap','showCreatePicking','loadPickingReports','loadPickHistory','loadRacks','showAddRacks','loadMaterials','showAddMaterial','loadUsers','showCreateUser','loadAudit','switchTab','saveSettings','sendAIChat','openScanner','closeScanner','showBulkUpload','showModal','closeModal','showToast','exportExcel','exportPDF','globalSearch','debounce','loadSettings','loadNotifications','approveDifference','editUser','resetUserPassword','deactivateUser','openVehicleDetail','openPickingDetail','suggestRack','verifyStock','aiSearch'].forEach(fn => { if(!window.WMS[fn]) window.WMS[fn] = function(){ console.log('WMS.'+fn+' not loaded yet'); }; });
 </script>
 <script src="app.js"></script>
 

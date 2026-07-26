@@ -6,7 +6,7 @@
   'use strict';
 
   // ─── CONFIG ───────────────────────────────────────────────
-  const API = window.API_BASE || 'https://enterprise-wms-fyna.onrender.com/api';
+  const API = window.API_BASE || 'https://enterprise-wms-fyna.onrender.com  /api';
   let TOKEN = localStorage.getItem('wms_token') || null;
   let USER = JSON.parse(localStorage.getItem('wms_user') || 'null');
   let PERMS = JSON.parse(localStorage.getItem('wms_perms') || '[]');
