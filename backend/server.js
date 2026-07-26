@@ -37,7 +37,12 @@ const supabase = createClient(
 );
 
 // ─── MIDDLEWARE ──────────────────────────────────────────
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
 app.use(compression());
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '50mb' }));
