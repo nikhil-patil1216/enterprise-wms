@@ -1,11 +1,6 @@
-// ═══════════════════════════════════════════════════════════
-// ENTERPRISE WMS — COMPLETE BACKEND SERVER
-// ═══════════════════════════════════════════════════════════
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
@@ -19,7 +14,6 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-// ─── CONFIG ───────────────────────────────────────────────
 const app = express();
 const PORT = process.env.PORT || 5000;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads';
@@ -30,24 +24,23 @@ if (!fs.existsSync(path.join(UPLOAD_DIR, 'invoices'))) fs.mkdirSync(path.join(UP
 if (!fs.existsSync(path.join(UPLOAD_DIR, 'materials'))) fs.mkdirSync(path.join(UPLOAD_DIR, 'materials'), { recursive: true });
 if (!fs.existsSync(path.join(UPLOAD_DIR, 'exports'))) fs.mkdirSync(path.join(UPLOAD_DIR, 'exports'), { recursive: true });
 
-// ─── SUPABASE ────────────────────────────────────────────
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_KEY
 );
 
-// ─── MIDDLEWARE ──────────────────────────────────────────
-app.use(helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
-}));
 app.use(compression());
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/uploads', express.static(path.resolve(UPLOAD_DIR)));
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 500,
+    message: { error: 'Too many requests' }
+});
+app.use('/api/', limiter);
 
 // Rate limiter
 const limiter = rateLimit({
